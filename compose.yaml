@@ -1,0 +1,24 @@
+services:
+  api:
+    build:
+      context: apps/api
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+  web:
+    build:
+      context: apps/web
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+  postgres:
+    image: postgres:18.1-alpine3.23
+    restart: on-failure
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/18/docker
+    ports:
+      - 5432:5432
+volumes:
+  pgdata:
