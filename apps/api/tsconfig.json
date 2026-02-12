@@ -47,5 +47,11 @@
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "exclude": [
+    "prisma",
+    "dist",
+    "node_modules",
+    "prisma.config.ts"
+  ]
 }
