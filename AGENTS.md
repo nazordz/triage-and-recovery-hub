@@ -1,13 +1,30 @@
 # AGENTS Guide
 
-This file defines how coding agents should work in this repository.
+Goal: Build a system that ingests user complaints and asynchronously turns them into prioritized, "ready-to-send" drafts.
+
+1. The Ingestion API (The "Bottle-Neck" Test)
+   - Create a POST /tickets endpoint.
+   - Constraint: The AI processing (which takes 3-5 seconds) must not block the HTTP response. The API must return a 201 Created status immediately to the user, while the AI processing happens in the background.
+2. The AI Triage Engine (Background Worker)
+   - Implement a background task that calls an LLM to:
+     - Categorize: (Billing, Technical, Feature Request).
+     - Score: Sentiment (1-10) and Urgency (High/Medium/Low).
+     - Draft: A polite, context-aware response.
+   - Constraint: Ensure the AI returns valid JSON so your database stores the Category and Score as distinct fields, not just text.
+3. The Agent Dashboard
+   - List View: Show tickets color-coded by Urgency (Red/Green).
+   - Detail View: Allow an agent to edit the AI draft and click "Resolve" (updating the database).
 
 ## Project Layout
 
-- `apps/api`: Express 5 + TypeScript backend, Prisma + PostgreSQL.
-- `apps/web`: Next.js 16 (App Router) + TypeScript frontend.
-- `compose.yaml`: Local multi-service stack (`api`, `web`, `postgres`).
-- Root is not a pnpm workspace manager for both apps; each app is managed independently.
+1. `apps/api`: Express 5 + TypeScript backend, Prisma + PostgreSQL.
+   - `./src/controllers`: folder to store function that work as application logic
+   - `./src/configs`: folder to store configs to library
+2. `apps/web`: Next.js 16 (App Router) + TypeScript frontend.
+   - `./src/components/`: folder to store reactjs components
+   - `./src/app/`: folder to store nextjs pages as AppRouter
+3. `compose.yaml`: Local multi-service stack (`api`, `web`, `postgres`).
+4. Root is not a pnpm workspace manager for both apps; each app is managed independently.
 
 ## Tooling Baseline
 
@@ -18,7 +35,6 @@ This file defines how coding agents should work in this repository.
 ## Install And Run
 
 1. API
-
    - `cd apps/api`
    - `pnpm install`
    - `pnpm dev` (preferred for local development)
@@ -26,7 +42,6 @@ This file defines how coding agents should work in this repository.
    - `pnpm build`
 
 2. Web
-
    - `cd apps/web`
    - `pnpm install`
    - `pnpm dev`
@@ -34,14 +49,13 @@ This file defines how coding agents should work in this repository.
    - `pnpm build`
 
 3. Full stack with Docker
-
    - From repo root: `docker compose up --build`
    - Services: web on `:3000`, api on `:8000`, postgres on `:5432`.
 
 ## Environment And Secrets
 
-- API env file: `apps/api/.env`.
-- Expected variables include `DATABASE_URL` and provider keys (OpenAI).
+- ENV files: `apps/api/.env` and `apps/web/.env`.
+- `.env` example on file `.env.example` in same folder.
 - Never print secret values in logs, PR descriptions, issues, or commit messages.
 - Never commit new `.env` files or plaintext credentials.
 - If credentials are exposed, rotate them and replace with placeholders in shared docs.

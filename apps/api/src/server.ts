@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import express, { Express } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-
-dotenv.config();
 
 const app: Express = express();
 const port = "8000";
@@ -17,7 +15,6 @@ app.use(
   })
 );
 app.use(express.json());
-
 
 app.listen(port, () => {
   console.log(`server is running at http://localhost:${port}`);
