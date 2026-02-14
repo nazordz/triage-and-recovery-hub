@@ -6,7 +6,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "tsx src/server.js",
+    "start": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
     "build": "pkgroll --clean-dist",
     "type-check": "tsc --noEmit",

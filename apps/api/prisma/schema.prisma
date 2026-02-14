@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TicketCategory {
+  BILLING
+  TECHNICAL
+  FEATURE_REQUEST
+}
+
+enum TicketUrgency {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TicketStatus {
+  PENDING
+  TRIAGED
+  RESOLVED
+  FAILED
+}
+
+model Ticket {
+  id            String         @id @default(cuid())
+  customerName  String
+  customerEmail String
+  subject       String
+  message       String
+  category      TicketCategory?
+  sentiment     Int?
+  urgency       TicketUrgency?
+  aiDraft       String?
+  agentDraft    String?
+  status        TicketStatus   @default(PENDING)
+  triageError   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
