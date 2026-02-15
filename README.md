@@ -3,12 +3,14 @@
 ## Note
 
 1. How you handle edge cases the AI missed.
-   - I tried to solve the problem with codex locally
+   - I was working with codex in cloud then tried to solve the problem with codex locally
    - sometime I need to work in codex pr before merge it to `main`.
 2. How you structure your database and async logic.
-   - In this case I go with Prisma to run migration and use react-query to run interval pooling
+   - I go with Prisma to create migration files.
+   - Data is stored in PostgreSQL via Prisma with a tickets table
+   - React-query working to pooling the list of ticket.
 3. How you verify and validate the AI's output.
-   - Using openai sdk for javascript give the AI output become 
+   - Using openai sdk for javascript then use zod package to set the response format for AI output [triageService.ts](./apps/api/src/services/triageService.ts#L8)
 
 ## Technical Test
 
