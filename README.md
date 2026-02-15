@@ -1,6 +1,14 @@
 # Triage & Recovery Hub
 
-Technical Test
+## Note
+
+1. How you handle edge cases the AI missed.
+   - I tried to solve the problem with codex locally
+2. How you structure your database and async logic.
+   - In this case I go with Prisma to run migration and use react-query to run interval pooling
+3. How you verify and validate the AI's output.
+
+## Technical Test
 
 Goal: Build a system that ingests user complaints and asynchronously turns them into prioritized, "ready-to-send" drafts.
 

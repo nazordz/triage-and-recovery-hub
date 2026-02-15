@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8000:8000
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres?schema=recovery_hub
     env_file:
       - apps/api/.env
     depends_on:
@@ -33,7 +35,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $(POSTGRES_USER) -d $(POSTGRES_DB)"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d postgres'"]
       interval: 10s
       timeout: 5s
       retries: 5

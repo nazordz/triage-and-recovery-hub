@@ -39,7 +39,7 @@ const parseTriageResult = (raw: string): TriageResult => {
 
 const requestTriage = async (ticketMessage: string, subject: string): Promise<TriageResult> => {
   const completion = await openAIClient.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-5-mini",
     temperature: 0.2,
     response_format: { type: "json_object" },
     messages: [

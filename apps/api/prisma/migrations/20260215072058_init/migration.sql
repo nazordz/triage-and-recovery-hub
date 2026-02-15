@@ -8,21 +8,21 @@ CREATE TYPE "TicketUrgency" AS ENUM ('HIGH', 'MEDIUM', 'LOW');
 CREATE TYPE "TicketStatus" AS ENUM ('PENDING', 'TRIAGED', 'RESOLVED', 'FAILED');
 
 -- CreateTable
-CREATE TABLE "Ticket" (
+CREATE TABLE "tickets" (
     "id" TEXT NOT NULL,
-    "customerName" TEXT NOT NULL,
-    "customerEmail" TEXT NOT NULL,
+    "customer_name" TEXT NOT NULL,
+    "customer_email" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "message" TEXT NOT NULL,
     "category" "TicketCategory",
     "sentiment" INTEGER,
     "urgency" "TicketUrgency",
-    "aiDraft" TEXT,
-    "agentDraft" TEXT,
+    "ai_draft" TEXT,
+    "agent_draft" TEXT,
     "status" "TicketStatus" NOT NULL DEFAULT 'PENDING',
-    "triageError" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "triage_error" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Ticket_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "tickets_pkey" PRIMARY KEY ("id")
 );
