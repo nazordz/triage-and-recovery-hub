@@ -4,9 +4,11 @@
 
 1. How you handle edge cases the AI missed.
    - I tried to solve the problem with codex locally
+   - sometime I need to work in codex pr before merge it to `main`.
 2. How you structure your database and async logic.
    - In this case I go with Prisma to run migration and use react-query to run interval pooling
 3. How you verify and validate the AI's output.
+   - Using openai sdk for javascript give the AI output become 
 
 ## Technical Test
 

@@ -2,13 +2,19 @@ import prisma from "@/configs/prisma";
 import openAIClient from "@/configs/openAIClient";
 import { TicketCategory, TicketUrgency } from "@/generated/prisma/client";
 import { broadcastTicketEvent } from "@/events/ticketEvents";
+import { z } from "zod";
+import { zodResponseFormat } from "openai/helpers/zod";
 
-type TriageResult = {
-  category: "BILLING" | "TECHNICAL" | "FEATURE_REQUEST";
-  sentiment: number;
-  urgency: "HIGH" | "MEDIUM" | "LOW";
-  aiDraft: string;
-};
+const triageResultSchema = z
+  .object({
+    category: z.enum(["BILLING", "TECHNICAL", "FEATURE_REQUEST"]),
+    sentiment: z.number().int().min(1).max(10),
+    urgency: z.enum(["HIGH", "MEDIUM", "LOW"]),
+    aiDraft: z.string().trim().min(1),
+  })
+  .strict();
+
+type TriageResult = z.infer<typeof triageResultSchema>;
 
 const triageSystemPrompt = `You are an expert support triage agent. Return JSON only with fields:
 - category: one of BILLING, TECHNICAL, FEATURE_REQUEST
@@ -17,31 +23,10 @@ const triageSystemPrompt = `You are an expert support triage agent. Return JSON 
 - aiDraft: polite context-aware response draft for the customer
 Do not include markdown or extra keys.`;
 
-const parseTriageResult = (raw: string): TriageResult => {
-  const parsed = JSON.parse(raw) as Partial<TriageResult>;
-
-  if (
-    !parsed.category ||
-    !parsed.urgency ||
-    typeof parsed.sentiment !== "number" ||
-    typeof parsed.aiDraft !== "string"
-  ) {
-    throw new Error("Invalid triage payload structure");
-  }
-
-  return {
-    category: parsed.category,
-    urgency: parsed.urgency,
-    sentiment: Math.max(1, Math.min(10, Math.round(parsed.sentiment))),
-    aiDraft: parsed.aiDraft.trim(),
-  };
-};
-
 const requestTriage = async (ticketMessage: string, subject: string): Promise<TriageResult> => {
-  const completion = await openAIClient.chat.completions.create({
+  const completion = await openAIClient.chat.completions.parse({
     model: "gpt-5-mini",
-    temperature: 0.2,
-    response_format: { type: "json_object" },
+    response_format: zodResponseFormat(triageResultSchema, "ticket_triage"),
     messages: [
       { role: "system", content: triageSystemPrompt },
       {
@@ -54,13 +39,11 @@ const requestTriage = async (ticketMessage: string, subject: string): Promise<Tr
     ],
   });
 
-  const content = completion.choices[0]?.message.content;
-
-  if (!content) {
+  const parsed = completion.choices[0]?.message.parsed;
+  if (!parsed) {
     throw new Error("Empty triage response");
   }
-
-  return parseTriageResult(content);
+  return parsed;
 };
 
 export const triageTicketInBackground = (ticketId: string, subject: string, message: string): void => {
