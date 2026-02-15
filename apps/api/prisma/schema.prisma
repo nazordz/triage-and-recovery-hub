@@ -28,19 +28,20 @@ enum TicketStatus {
 }
 
 model Ticket {
-  id            String         @id @default(cuid())
-  customerName  String
-  customerEmail String
+  id            String         @id @default(uuid(7))
+  customerName  String         @map("customer_name")
+  customerEmail String         @map("customer_email")
   subject       String
   message       String
   category      TicketCategory?
   sentiment     Int?
   urgency       TicketUrgency?
-  aiDraft       String?
-  agentDraft    String?
+  aiDraft       String?        @map("ai_draft")
+  agentDraft    String?        @map("agent_draft")
   status        TicketStatus   @default(PENDING)
-  triageError   String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-}
+  triageError   String?        @map("triage_error")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
 
+  @@map("tickets")
+}
